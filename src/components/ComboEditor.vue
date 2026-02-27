@@ -15,36 +15,41 @@
       <div v-if="combo.length === 0" class="empty-text">
         下のパレットから技を追加してください
       </div>
-      
-      <draggable 
-        v-model="combo" 
-        item-key="uid" 
-        class="combo-sequence"
-        ghost-class="ghost"
-        :animation="200"
-      >
+
+
+
+      <draggable v-model="combo" item-key="uid" class="combo-sequence" ghost-class="ghost" :animation="200">
         <template #item="{ element, index }">
-          <div 
-            class="combo-item"
-            :class="element.category"
-            @click="removeMove(index)"
-            title="ドラッグで移動 / クリックで削除"
-          >
-            {{ element.label }}
+          <div class="combo-item-container">
+            <div class="combo-item" :class="[element.category, { 'is-selected': lastSelectedUid === element.uid }]"
+              @click="selectItem(element.uid)">
+              <div class="item-main">
+                <span class="move-label">{{ element.label }}</span>
+                <input v-model="element.annotation" placeholder="状況メモ..." class="annotation-input" @click.stop />
+              </div>
             </div>
+          </div>
         </template>
       </draggable>
     </div>
 
+    <div class="quick-tags-area">
+      <span class="tags-label">クイックタグ:</span>
+      <div class="tag-buttons">
+        <button v-for="tag in quickTags" :key="tag" @click="applyTag(tag)" class="tag-btn">
+          + {{ tag }}
+        </button>
+      </div>
+    </div>
     <div class="controls">
       <button @click="clearCombo" class="btn clear-btn">クリア</button>
       <button @click="copyComboText" class="btn copy-btn">テキストでコピー</button>
     </div>
 
     <div class="palette">
-<div class="palette-section">
+      <div class="palette-section">
         <h3>通常技 (共通)</h3>
-        
+
         <div class="sub-section">
           <h4 class="sub-header">立ち</h4>
           <div class="button-group">
@@ -76,7 +81,8 @@
       <div class="palette-section" v-if="currentCharacter && currentCharacter.uniqueMoves?.length > 0">
         <h3>{{ currentCharacter.name }} の特殊技・ターゲットコンボ</h3>
         <div class="button-group">
-          <button v-for="move in currentCharacter.uniqueMoves" :key="move.id" @click="addMove(move)" class="move-btn unique">
+          <button v-for="move in currentCharacter.uniqueMoves" :key="move.id" @click="addMove(move)"
+            class="move-btn unique">
             {{ move.label }}
           </button>
         </div>
@@ -94,12 +100,14 @@
             <button :class="{ active: strength === 'OD' }" @click="strength = 'OD'" class="mod-btn od">OD</button>
           </div>
         </div>
-        
+
         <div class="button-group">
-          <button v-for="move in currentCharacter.specialMoves" :key="move.id" @click="addMove(move)" class="move-btn special">
+          <button v-for="move in currentCharacter.specialMoves" :key="move.id" @click="addMove(move)"
+            class="move-btn special">
             {{ move.label }}
           </button>
-          <button v-for="move in currentCharacter.superMoves" :key="move.id" @click="addMove(move)" class="move-btn super">
+          <button v-for="move in currentCharacter.superMoves" :key="move.id" @click="addMove(move)"
+            class="move-btn super">
             {{ move.label }}
           </button>
         </div>
@@ -120,17 +128,18 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue' // ⭐️ watchを追加
 import draggable from 'vuedraggable'
-import { 
-  type Move, 
+import {
+  type Move,
   standNormalMoves,    // ⭐️ 追加
   crouchNormalMoves,   // ⭐️ 追加
   jumpNormalMoves,     // ⭐️ 追加, 
-  systemMoves, 
-  characters 
+  systemMoves,
+  characters
 } from '../data/characters'
 
 interface ComboItem extends Move {
   uid: number
+  annotation?: string
 }
 
 // ⭐️ Local Storageの保存用キー名
@@ -159,6 +168,23 @@ const combo = ref<ComboItem[]>(initialCombo)
 // 強度指定用の変数（これは一時的なものなので保存しなくてOK）
 const strength = ref<string>('')
 
+const quickTags = ['カウンター', 'パニカン', '画面端', 'ラッシュ', 'DRキャンセル', '最大溜め']
+const lastSelectedUid = ref<number | null>(null)
+
+const selectItem = (uid: number) => {
+  lastSelectedUid.value = uid
+}
+
+const applyTag = (tag: string) => {
+  if (lastSelectedUid.value === null && combo.value.length > 0) {
+    lastSelectedUid.value = combo.value[combo.value.length - 1]?.uid ?? null;
+  }
+  const item = combo.value.find(m => m.uid === lastSelectedUid.value)
+  if (item) {
+    item.annotation = item.annotation ? `${item.annotation}, ${tag}` : tag
+  }
+}
+
 // --- 2. 自動保存（データが変わった時に Local Storage を更新） ---
 
 // キャラクターが変更されたら保存
@@ -184,10 +210,11 @@ const addMove = (move: Move): void => {
     finalLabel = `${strength.value}${move.label}`
   }
 
-  combo.value.push({ 
-    ...move, 
+  combo.value.push({
+    ...move,
     label: finalLabel,
-    uid: Date.now() 
+    uid: Date.now(),
+    annotation: '' // ⭐️ 初期化
   })
 }
 
@@ -198,14 +225,15 @@ const removeMove = (index: number): void => {
 const clearCombo = (): void => {
   combo.value = []
 }
-
 const copyComboText = async (): Promise<void> => {
   if (combo.value.length === 0) return
-  
+
   const charName = currentCharacter.value?.name || '不明なキャラクター'
-  const comboText = combo.value.map(m => m.label).join(' > ')
+  const comboText = combo.value.map(m => {
+    return m.annotation ? `${m.label}(${m.annotation})` : m.label
+  }).join(' > ')
+
   const fullText = `【${charName}】\n${comboText}`
-  
   if (!navigator.clipboard) {
     alert('お使いの環境ではクリップボードへのコピーがサポートされていません。')
     return
@@ -283,7 +311,8 @@ const onCharacterChange = () => {
 .combo-sequence {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 0; /* 矢印をCSSにしたため、横のgapは0にして余白で調整します */
+  gap: 10px 0;
+  /* 矢印をCSSにしたため、横のgapは0にして余白で調整します */
   align-items: center;
   width: 100%;
   min-height: 40px;
@@ -293,14 +322,16 @@ const onCharacterChange = () => {
   padding: 8px 16px;
   border-radius: 4px;
   font-weight: bold;
-  cursor: grab; /* ⭐️ ドラッグできることを示すカーソル */
+  cursor: grab;
+  /* ⭐️ ドラッグできることを示すカーソル */
   user-select: none;
   display: flex;
   align-items: center;
 }
 
 .combo-item:active {
-  cursor: grabbing; /* ⭐️ ドラッグ中は掴んでいるカーソルに */
+  cursor: grabbing;
+  /* ⭐️ ドラッグ中は掴んでいるカーソルに */
 }
 
 /* ⭐️ 矢印をCSSで自動付与する仕組み（最後以外の要素につく） */
@@ -309,7 +340,8 @@ const onCharacterChange = () => {
   margin: 0 10px;
   color: #fff;
   font-size: 12px;
-  pointer-events: none; /* マウスイベントを邪魔しないようにする */
+  pointer-events: none;
+  /* マウスイベントを邪魔しないようにする */
 }
 
 /* ⭐️ ドラッグ中（浮いている元の場所）のスタイル */
@@ -318,11 +350,30 @@ const onCharacterChange = () => {
   filter: grayscale(100%);
 }
 
-.normal { background-color: #3a86ff; color: white; }
-.unique { background-color: #20b2aa; color: white; }
-.special { background-color: #ff006e; color: white; }
-.super { background-color: #ffbe0b; color: #000; }
-.system { background-color: #8338ec; color: white; }
+.normal {
+  background-color: #3a86ff;
+  color: white;
+}
+
+.unique {
+  background-color: #20b2aa;
+  color: white;
+}
+
+.special {
+  background-color: #ff006e;
+  color: white;
+}
+
+.super {
+  background-color: #ffbe0b;
+  color: #000;
+}
+
+.system {
+  background-color: #8338ec;
+  color: white;
+}
 
 .controls {
   display: flex;
@@ -339,8 +390,15 @@ const onCharacterChange = () => {
   font-weight: bold;
 }
 
-.clear-btn { background-color: #e63946; color: white; }
-.copy-btn { background-color: #2a9d8f; color: white; }
+.clear-btn {
+  background-color: #e63946;
+  color: white;
+}
+
+.copy-btn {
+  background-color: #2a9d8f;
+  color: white;
+}
 
 .palette {
   background-color: #0f3460;
@@ -366,7 +424,7 @@ const onCharacterChange = () => {
   font-size: 1rem;
 }
 
-.palette-section > h3 {
+.palette-section>h3 {
   border-bottom: 1px solid #4a4e69;
   padding-bottom: 5px;
   margin-bottom: 10px;
@@ -430,12 +488,103 @@ const onCharacterChange = () => {
 .sub-section {
   margin-bottom: 15px;
   padding-left: 10px;
-  border-left: 3px solid #3a86ff; /* 通常技カラーの青い線を左に引く */
+  border-left: 3px solid #3a86ff;
+  /* 通常技カラーの青い線を左に引く */
 }
 
 .sub-header {
   font-size: 0.9rem;
   color: #8d99ae;
   margin: 0 0 8px 0;
+}
+
+.combo-item-container {
+  display: flex;
+  align-items: center;
+}
+
+.combo-item {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 12px;
+  min-width: 100px;
+  /* ...既存のスタイルに合わせる */
+}
+
+.item-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.move-label {
+  font-size: 0.95rem;
+}
+
+/* ⭐️ メモ入力欄のスタイル */
+.annotation-input {
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fca311;
+  font-size: 0.75rem;
+  padding: 2px 4px;
+  border-radius: 2px;
+  outline: none;
+  width: 100%;
+}
+
+.annotation-input:focus {
+  border-bottom-color: #fca311;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.annotation-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.quick-tags-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0 20px 0;
+  padding: 10px;
+  background-color: #0f3460;
+  border-radius: 8px;
+  border: 1px solid #4a4e69;
+}
+
+.tags-label {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #fca311;
+  white-space: nowrap;
+}
+
+.tag-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-btn {
+  background-color: #16213e;
+  color: #e2e8f0;
+  border: 1px solid #4a4e69;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tag-btn:hover {
+  background-color: #3a86ff;
+  border-color: #3a86ff;
+}
+
+.combo-item.is-selected {
+  outline: 2px solid #fca311;
+  box-shadow: 0 0 10px rgba(252, 163, 17, 0.5);
 }
 </style>

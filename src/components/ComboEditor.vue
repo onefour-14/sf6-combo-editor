@@ -19,7 +19,7 @@
 
 
       <draggable v-model="combo" item-key="uid" class="combo-sequence" ghost-class="ghost" :animation="200">
-        <template #item="{ element, index }">
+        <template #item="{ element }">
           <div class="combo-item-container">
             <div class="combo-item" :class="[element.category, { 'is-selected': lastSelectedUid === element.uid }]"
               @click="selectItem(element.uid)">
@@ -217,10 +217,11 @@ const addMove = (move: Move): void => {
     annotation: '' // ⭐️ 初期化
   })
 }
-
+/*
 const removeMove = (index: number): void => {
   combo.value.splice(index, 1)
 }
+  */
 
 const clearCombo = (): void => {
   combo.value = []

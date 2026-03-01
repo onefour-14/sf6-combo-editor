@@ -11,26 +11,42 @@
       </select>
     </div>
 
-    <div class="combo-display-area">
-      <div v-if="combo.length === 0" class="empty-text">
-        下のパレットから技を追加してください
-      </div>
-
-
-
-      <draggable v-model="combo" item-key="uid" class="combo-sequence" ghost-class="ghost" :animation="200">
-        <template #item="{ element }">
-          <div class="combo-item-container">
-            <div class="combo-item" :class="[element.category, { 'is-selected': lastSelectedUid === element.uid }]"
-              @click="selectItem(element.uid)">
-              <div class="item-main">
-                <span class="move-label">{{ element.label }}</span>
-                <input v-model="element.annotation" placeholder="状況メモ..." class="annotation-input" @click.stop />
-              </div>
-            </div>
+    <div class="combos-list">
+      <div v-for="(combo, index) in combos" :key="combo.id" class="combo-wrapper"
+        :class="{ 'is-active': activeComboId === combo.id }" @click="activateCombo(combo.id)">
+        <div class="combo-header">
+          <span class="combo-index">Combo {{ index + 1 }}</span>
+          <div class="combo-actions">
+            <button @click.stop="copyComboText(combo.id)" class="btn-sm copy-btn">コピー</button>
+            <button @click.stop="clearCombo(combo.id)" class="btn-sm clear-btn">クリア</button>
+            <button v-if="combos.length > 1" @click.stop="removeCombo(combo.id)" class="btn-sm remove-btn">削除</button>
           </div>
-        </template>
-      </draggable>
+        </div>
+
+        <div class="combo-display-area">
+          <div v-if="combo.items.length === 0" class="empty-text">
+            (技を追加してください)
+          </div>
+
+          <draggable v-model="combo.items" item-key="uid" class="combo-sequence" ghost-class="ghost" :animation="200">
+            <template #item="{ element }">
+              <div class="combo-item-container">
+                <div class="combo-item" :class="[element.category, { 'is-selected': lastSelectedUid === element.uid }]"
+                  @click.stop="selectItem(element.uid)">
+                  <div class="item-main">
+                    <span class="move-label">{{ element.label }}</span>
+                    <input v-model="element.annotation" placeholder="状況メモ..." class="annotation-input" @click.stop />
+                  </div>
+                </div>
+              </div>
+            </template>
+          </draggable>
+        </div>
+      </div>
+    </div>
+
+    <div class="global-controls">
+      <button @click="addNewCombo" class="btn add-combo-btn">+ コンボを追加</button>
     </div>
 
     <div class="quick-tags-area">
@@ -40,10 +56,6 @@
           + {{ tag }}
         </button>
       </div>
-    </div>
-    <div class="controls">
-      <button @click="clearCombo" class="btn clear-btn">クリア</button>
-      <button @click="copyComboText" class="btn copy-btn">テキストでコピー</button>
     </div>
 
     <div class="palette">
@@ -142,6 +154,11 @@ interface ComboItem extends Move {
   annotation?: string
 }
 
+interface Combo {
+  id: number
+  items: ComboItem[]
+}
+
 // ⭐️ Local Storageの保存用キー名
 const STORAGE_KEY_CHAR = 'sf6_combo_editor_character'
 const STORAGE_KEY_COMBO = 'sf6_combo_editor_combo'
@@ -154,16 +171,29 @@ const savedChar = localStorage.getItem(STORAGE_KEY_CHAR)
 const selectedCharacterId = ref<string>(savedChar || 'cviper')
 
 // コンボの復元
-let initialCombo: ComboItem[] = []
+let initialCombos: Combo[] = []
 const savedCombo = localStorage.getItem(STORAGE_KEY_COMBO)
 if (savedCombo) {
   try {
-    initialCombo = JSON.parse(savedCombo) // 文字列から配列に戻す
+    const parsed = JSON.parse(savedCombo)
+    if (Array.isArray(parsed)) {
+      // 旧データ(ComboItem[])か新データ(Combo[])かの判定
+      if (parsed.length > 0 && 'items' in parsed[0]) {
+        initialCombos = parsed
+      } else if (parsed.length > 0) {
+        // 旧データを移行
+        initialCombos = [{ id: Date.now(), items: parsed }]
+      }
+    }
   } catch (e) {
     console.error('コンボデータの復元に失敗しました', e)
   }
 }
-const combo = ref<ComboItem[]>(initialCombo)
+if (initialCombos.length === 0) {
+  initialCombos = [{ id: Date.now(), items: [] }]
+}
+const combos = ref<Combo[]>(initialCombos)
+const activeComboId = ref<number>(combos.value[0]?.id ?? 0)
 
 // 強度指定用の変数（これは一時的なものなので保存しなくてOK）
 const strength = ref<string>('')
@@ -171,17 +201,41 @@ const strength = ref<string>('')
 const quickTags = ['カウンター', 'パニカン', '画面端', 'ラッシュ', 'DRキャンセル', '最大溜め']
 const lastSelectedUid = ref<number | null>(null)
 
+/**
+ * コンボアイテムを選択状態にします。
+ *
+ * @param uid - 選択するアイテムの一意なID
+ */
 const selectItem = (uid: number) => {
   lastSelectedUid.value = uid
+  // 選択されたアイテムを含むコンボをアクティブにする
+  const foundCombo = combos.value.find(c => c.items.some(item => item.uid === uid))
+  if (foundCombo) {
+    activeComboId.value = foundCombo.id
+  }
 }
 
+/**
+ * 選択中のコンボアイテムにタグ（注釈）を追加します。
+ * アイテムが選択されていない場合は、リストの最後のアイテムを対象とします。
+ *
+ * @param tag - 追加するタグのテキスト
+ */
 const applyTag = (tag: string) => {
-  if (lastSelectedUid.value === null && combo.value.length > 0) {
-    lastSelectedUid.value = combo.value[combo.value.length - 1]?.uid ?? null;
+  if (lastSelectedUid.value === null) {
+    const activeCombo = combos.value.find(c => c.id === activeComboId.value)
+    const lastItem = activeCombo?.items[activeCombo.items.length - 1]
+    if (lastItem) {
+      lastSelectedUid.value = lastItem.uid
+    }
   }
-  const item = combo.value.find(m => m.uid === lastSelectedUid.value)
-  if (item) {
-    item.annotation = item.annotation ? `${item.annotation}, ${tag}` : tag
+  
+  for (const combo of combos.value) {
+    const item = combo.items.find(m => m.uid === lastSelectedUid.value)
+    if (item) {
+      item.annotation = item.annotation ? `${item.annotation}, ${tag}` : tag
+      return
+    }
   }
 }
 
@@ -193,44 +247,68 @@ watch(selectedCharacterId, (newVal) => {
 })
 
 // コンボ配列が変更されたら保存（deep: true をつけることで、要素の追加・削除・並び替えに反応します）
-watch(combo, (newVal) => {
+watch(combos, (newVal) => {
   localStorage.setItem(STORAGE_KEY_COMBO, JSON.stringify(newVal))
 }, { deep: true })
 
-
-// --- 以下、既存のロジック（そのまま） ---
-
+/**
+ * 現在選択されているキャラクターのデータオブジェクトを返します。
+ *
+ * @returns キャラクターオブジェクト
+ */
 const currentCharacter = computed(() => {
   return characters.find(c => c.id === selectedCharacterId.value) || characters[0]
 })
 
+/**
+ * コンボリストに新しい技を追加します。
+ * 必殺技の場合は、現在設定されている強度（弱・中・強・OD）をラベルに付与します。
+ *
+ * @param move - 追加する技のデータオブジェクト
+ */
 const addMove = (move: Move): void => {
   let finalLabel = move.label
   if (move.category === 'special' && strength.value !== '') {
     finalLabel = `${strength.value}${move.label}`
   }
 
-  combo.value.push({
+  const targetCombo = combos.value.find(c => c.id === activeComboId.value)
+  if (!targetCombo) return
+
+  const newItemUid = Date.now()
+  targetCombo.items.push({
     ...move,
     label: finalLabel,
-    uid: Date.now(),
+    uid: newItemUid,
     annotation: '' // ⭐️ 初期化
   })
+  selectItem(newItemUid)
 }
-/*
-const removeMove = (index: number): void => {
-  combo.value.splice(index, 1)
-}
-  */
 
-const clearCombo = (): void => {
-  combo.value = []
+/**
+ * 現在のコンボリストを全てクリアします。
+ */
+const clearCombo = (comboId?: number): void => {
+  const targetId = comboId ?? activeComboId.value
+  const targetCombo = combos.value.find(c => c.id === targetId)
+  if (targetCombo) {
+    targetCombo.items = []
+  }
 }
-const copyComboText = async (): Promise<void> => {
-  if (combo.value.length === 0) return
+
+/**
+ * 現在のコンボレシピをテキスト形式でクリップボードにコピーします。
+ * 各技は " > " で連結され、注釈がある場合は括弧書きで付記されます。
+ *
+ * @returns コピー処理のPromise
+ */
+const copyComboText = async (comboId?: number): Promise<void> => {
+  const targetId = comboId ?? activeComboId.value
+  const targetCombo = combos.value.find(c => c.id === targetId)
+  if (!targetCombo || targetCombo.items.length === 0) return
 
   const charName = currentCharacter.value?.name || '不明なキャラクター'
-  const comboText = combo.value.map(m => {
+  const comboText = targetCombo.items.map(m => {
     return m.annotation ? `${m.label}(${m.annotation})` : m.label
   }).join(' > ')
 
@@ -248,11 +326,43 @@ const copyComboText = async (): Promise<void> => {
   }
 }
 
+/**
+ * 新しいコンボエリアを追加します。
+ */
+const addNewCombo = () => {
+  const newId = Date.now()
+  combos.value.push({ id: newId, items: [] })
+  activeComboId.value = newId
+}
+
+/**
+ * 指定したコンボエリアを削除します。
+ */
+const removeCombo = (id: number) => {
+  const index = combos.value.findIndex(c => c.id === id)
+  if (index !== -1) {
+    combos.value.splice(index, 1)
+    if (activeComboId.value === id) {
+      activeComboId.value = combos.value[Math.max(0, index - 1)]?.id ?? 0
+    }
+  }
+}
+
+const activateCombo = (id: number) => {
+  activeComboId.value = id
+}
+
+/**
+ * キャラクター選択が変更された際のイベントハンドラです。
+ * 既存のコンボがある場合、クリアするかどうかの確認ダイアログを表示します。
+ */
 const onCharacterChange = () => {
-  if (combo.value.length > 0) {
+  const hasItems = combos.value.some(c => c.items.length > 0)
+  if (hasItems) {
     const confirmClear = confirm('キャラクターを変更すると現在のコンボがクリアされます。よろしいですか？')
     if (confirmClear) {
-      clearCombo()
+      combos.value = [{ id: Date.now(), items: [] }]
+      activeComboId.value = combos.value[0]?.id ?? 0
     }
   }
 }
@@ -291,13 +401,50 @@ const onCharacterChange = () => {
   cursor: pointer;
 }
 
+.combos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.combo-wrapper {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #16213e;
+  transition: border-color 0.2s;
+}
+
+.combo-wrapper.is-active {
+  border-color: #fca311;
+  background-color: #1f2b4d;
+}
+
+.combo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 0 5px;
+}
+
+.combo-index {
+  font-weight: bold;
+  color: #fca311;
+}
+
+.combo-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .combo-display-area {
   min-height: 100px;
-  background-color: #16213e;
+  background-color: rgba(0, 0, 0, 0.2);
   border: 2px dashed #4a4e69;
   border-radius: 8px;
   padding: 20px;
-  margin-bottom: 15px;
   display: flex;
   align-items: center;
   overflow-x: auto;
@@ -320,7 +467,8 @@ const onCharacterChange = () => {
 }
 
 .combo-item {
-  padding: 8px 16px;
+  padding: 5px 10px;
+  min-width: 40px;
   border-radius: 4px;
   font-weight: bold;
   cursor: grab;
@@ -336,11 +484,11 @@ const onCharacterChange = () => {
 }
 
 /* ⭐️ 矢印をCSSで自動付与する仕組み（最後以外の要素につく） */
-.combo-item:not(:last-child)::after {
+.combo-item-container:not(:last-child)::after {
   content: '▶';
-  margin: 0 10px;
+  margin: 0 3px;
   color: #fff;
-  font-size: 12px;
+  font-size: 9px;
   pointer-events: none;
   /* マウスイベントを邪魔しないようにする */
 }
@@ -389,16 +537,6 @@ const onCharacterChange = () => {
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
-}
-
-.clear-btn {
-  background-color: #e63946;
-  color: white;
-}
-
-.copy-btn {
-  background-color: #2a9d8f;
-  color: white;
 }
 
 .palette {
@@ -507,8 +645,8 @@ const onCharacterChange = () => {
 .combo-item {
   display: flex;
   flex-direction: column;
-  padding: 6px 12px;
-  min-width: 100px;
+  padding: 4px 8px;
+  min-width: 60px;
   /* ...既存のスタイルに合わせる */
 }
 
@@ -519,7 +657,7 @@ const onCharacterChange = () => {
 }
 
 .move-label {
-  font-size: 0.95rem;
+  font-size: 0.6rem;
 }
 
 /* ⭐️ メモ入力欄のスタイル */
@@ -528,8 +666,8 @@ const onCharacterChange = () => {
   border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   color: #fca311;
-  font-size: 0.75rem;
-  padding: 2px 4px;
+  font-size: 0.5rem;
+  padding: 1px 2px;
   border-radius: 2px;
   outline: none;
   width: 100%;
@@ -587,5 +725,35 @@ const onCharacterChange = () => {
 .combo-item.is-selected {
   outline: 2px solid #fca311;
   box-shadow: 0 0 10px rgba(252, 163, 17, 0.5);
+}
+
+.global-controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.add-combo-btn {
+  background-color: #3a86ff;
+  color: white;
+  width: 100%;
+  padding: 12px;
+}
+
+.btn-sm {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: white;
+}
+
+.copy-btn { background-color: #2a9d8f; }
+.clear-btn { background-color: #e63946; }
+.remove-btn { background-color: #6c757d; }
+
+.copy-btn:hover, .clear-btn:hover, .remove-btn:hover {
+  filter: brightness(1.1);
 }
 </style>

@@ -62,6 +62,8 @@ export const characters: Character[] = [
       { id: 'ryu_4hp', label: '不抜 (4HP)', category: 'unique' },
       { id: 'ryu_6hk', label: '旋風脚 (6HK)', category: 'unique' },
       { id: 'ryu_tc1', label: '上段二連撃 (HP > HK)', category: 'unique' },
+      { id: 'ryu_tc2', label: '上段三連撃 (MP > LK > HK)', category: 'unique' },
+      { id: 'ryu_tc3', label: '不破三連撃 (MP > LK > 2HK)', category: 'unique' },
     ],
     specialMoves: [
       { id: 'ryu_hadou', label: '波動拳 (236P)', category: 'special' },
@@ -70,6 +72,7 @@ export const characters: Character[] = [
       { id: 'ryu_hasho', label: '波掌撃 (214P)', category: 'special' },
       { id: 'ryu_denjin', label: '電刃錬気 (22P)', category: 'special' },
       { id: 'ryu_kuchu_tatsu', label: '空中竜巻旋風脚 (空中214K)', category: 'special' },
+      { id: 'ryu_shuchu', label: '集中 (22P)', category: 'special' },
     ],
     superMoves: [
       { id: 'ryu_sa1', label: 'SA1: 真空波動拳', category: 'super' },
@@ -85,6 +88,7 @@ export const characters: Character[] = [
       { id: 'ken_6hk', label: '紫電カカト落とし (6HK)', category: 'unique' },
       { id: 'ken_tc1', label: '顎撥二連 (MP > HP)', category: 'unique' },
       { id: 'ken_tc2', label: '奮迅脚連携 (MK > HK)', category: 'unique' },
+      { id: 'ken_tc3', label: '閃光連脚 (LK > MK > HK)', category: 'unique' },
     ],
     specialMoves: [
       { id: 'ken_hadou', label: '波動拳 (236P)', category: 'special' },
@@ -111,6 +115,7 @@ export const characters: Character[] = [
       { id: 'luke_6hk', label: 'ノーズブレイカー (6HK)', category: 'unique' },
       { id: 'luke_tc1', label: 'トリプルインパクト (LP > LP > LP)', category: 'unique' },
       { id: 'luke_tc2', label: 'スナップバックコンボ (MP > MP > MP > MP)', category: 'unique' },
+      { id: 'luke_tc3', label: 'フェイタルショット (LK > MK)', category: 'unique' },
     ],
     specialMoves: [
       { id: 'luke_sand', label: 'サンドブラスト (236P)', category: 'special' },
@@ -151,9 +156,12 @@ export const characters: Character[] = [
     name: '春麗',
     uniqueMoves: [
       { id: 'chunli_4mp', label: '追突拳 (4 or 6MP)', category: 'unique' },
-      { id: 'chunli_3hk', label: '鶴脚落 (3 or 6HK)', category: 'unique' },
+      { id: 'chunli_4hp', label: '発勁 (4HP)', category: 'unique' },
+      { id: 'chunli_3hp', label: '水蓮掌 (3HP)', category: 'unique' },
+      { id: 'chunli_6hk', label: '翼旋脚 (6HK)', category: 'unique' },
+      { id: 'chunli_3hk', label: '鶴脚落 (3HK)', category: 'unique' },
+      { id: 'chunli_6mk', label: '飛燕蹴 (6MK)', category: 'unique' },
       { id: 'chunli_j2mk', label: '鷹爪脚 (空中2MK)', category: 'unique' },
-      { id: 'chunli_tc1', label: '行雲流水 (214P) 派生', category: 'unique' },
     ],
     specialMoves: [
       { id: 'chunli_kikou', label: '気功拳 (4溜め6P)', category: 'special' },
@@ -175,7 +183,9 @@ export const characters: Character[] = [
     uniqueMoves: [
       { id: 'cammy_4mp', label: 'リフトアッパー (4MP)', category: 'unique' },
       { id: 'cammy_4hk', label: 'ディレイディスチャージ (4HK)', category: 'unique' },
+      { id: 'cammy_6hk', label: 'ニーバレット (6HK)', category: 'unique' },
       { id: 'cammy_tc1', label: 'スイングコンビネーション (HP > HK)', category: 'unique' },
+      { id: 'cammy_tc2', label: 'リフトコンビネーション (4MP > HK)', category: 'unique' },
     ],
     specialMoves: [
       { id: 'cammy_spiral', label: 'スパイラルアロー (236K)', category: 'special' },
@@ -196,6 +206,7 @@ export const characters: Character[] = [
     uniqueMoves: [
       { id: 'juri_6mk', label: '閃回脚 (6MK)', category: 'unique' },
       { id: 'juri_6hk', label: '殺空脚 (6HK)', category: 'unique' },
+      { id: 'juri_6hp', label: '虚裂 (6HP)', category: 'unique' },
       { id: 'juri_tc1', label: '死連閃 (MP > 4HP / 6HP)', category: 'unique' },
     ],
     specialMoves: [
@@ -219,6 +230,8 @@ export const characters: Character[] = [
       { id: 'zan_6hp', label: 'ヘッドバット (6HP)', category: 'unique' },
       { id: 'zan_3hp', label: 'マシンガンチョップ (3HP)', category: 'unique' },
       { id: 'zan_6hk', label: 'ステップキック (6HK)', category: 'unique' },
+      { id: 'zan_6mk', label: 'サイクロンニールキック (6MK)', category: 'unique' },
+      { id: 'zan_6mk_hold', label: 'ニーハンマー (6MKホールド)', category: 'unique' },
       { id: 'zan_j2hp', label: 'フライングボディプレス (空中2HP)', category: 'unique' },
       { id: 'zan_j2mk', label: 'フライングクロスチョップ (空中2MK)', category: 'unique' },
     ],
@@ -241,8 +254,11 @@ export const characters: Character[] = [
     uniqueMoves: [
       { id: 'guile_4lk', label: 'ニーバズーカ (4 or 6LK)', category: 'unique' },
       { id: 'guile_4mk', label: 'ローリングソバット (4 or 6MK)', category: 'unique' },
+      { id: 'guile_6mk', label: 'ギロチンキック (6MK)', category: 'unique' },
+      { id: 'guile_4hp', label: 'バーンストレート (4HP)', category: 'unique' },
       { id: 'guile_4hp', label: 'スピニングバックナックル (6HP)', category: 'unique' },
       { id: 'guile_6hk', label: 'リバーススピンキック (6HK)', category: 'unique' },
+      { id: 'guile_tc2', label: 'ドレイクファング (2MK > 6MP)', category: 'unique' },
       { id: 'guile_tc1', label: 'リコイルスプール (MP > 4HP)', category: 'unique' },
     ],
     specialMoves: [
@@ -264,6 +280,7 @@ export const characters: Character[] = [
       { id: 'akuma_6mp', label: '頭蓋殺 (6MP)', category: 'unique' },
       { id: 'akuma_4hp', label: '羅漢 (4HP)', category: 'unique' },
       { id: 'akuma_tc1', label: '鬼哭連斬 (6HK > HK)', category: 'unique' },
+      { id: 'akuma_j2mk', label: '天魔空刃脚 (空中2MK)', category: 'unique' },
     ],
     specialMoves: [
       { id: 'akuma_gouhadou', label: '豪波動拳 (236P)', category: 'special' },
@@ -289,6 +306,8 @@ export const characters: Character[] = [
       { id: 'dj_6mk', label: 'サンライズヒール (6MK)', category: 'unique' },
       { id: 'dj_4hk', label: 'フェイスブレイカー (4HK)', category: 'unique' },
       { id: 'dj_tc1', label: 'スリービートコンボ (LP > LK > MK)', category: 'unique' },
+      { id: 'dj_tc2', label: 'ディージェイスペシャル (MP > MP > MP)', category: 'unique' },
+      { id: 'dj_tc3', label: 'ファンキースライサー (LK > LK > LK)', category: 'unique' },
     ],
     specialMoves: [
       { id: 'dj_airslasher', label: 'エアースラッシャー (4溜め6P)', category: 'special' },
@@ -311,12 +330,14 @@ export const characters: Character[] = [
       { id: 'jp_4mp', label: 'トルノ (4MP)', category: 'unique' },
       { id: 'jp_6hp', label: 'マラカ (6HP)', category: 'unique' },
       { id: 'jp_3hk', label: 'ジラント (3HK)', category: 'unique' },
+      { id: 'jp_tc1', label: 'バリバリス (MP > MP)', category: 'unique' },
     ],
     specialMoves: [
       { id: 'jp_triglav', label: 'トリグラフ (22P)', category: 'special' },
       { id: 'jp_stribog', label: 'ストリボーグ (236P)', category: 'special' },
       { id: 'jp_departure', label: 'ヴィーハト (214P)', category: 'special' },
       { id: 'jp_amnesia', label: 'アムネジア (22K)', category: 'special' },
+      { id: 'jp_amnesia', label: 'トルバラン (236K)', category: 'special' },
       { id: 'jp_embrace', label: 'アブニマーチ (623P)', category: 'special' },
     ],
     superMoves: [
@@ -332,8 +353,11 @@ export const characters: Character[] = [
       { id: 'marisa_3hp', label: 'マカイラ (3HP)', category: 'unique' },
       { id: 'marisa_6hp', label: 'ノウス (6HP)', category: 'unique' },
       { id: 'marisa_6hk', label: 'ファルクス (6HK)', category: 'unique' },
+      { id: 'marisa_4hp', label: 'マグナバンカー (4HP)', category: 'unique' },
+      { id: 'marisa_8hp', label: 'カエルム (8HP)', category: 'unique' },
       { id: 'marisa_tc1', label: 'ライトツーコンボ (LP > LP)', category: 'unique' },
       { id: 'marisa_tc2', label: 'ミドルツーコンボ (MP > MP)', category: 'unique' },
+      { id: 'marisa_tc3', label: 'ヘビーワンツー (HP > HP)', category: 'unique' },
     ],
     specialMoves: [
       { id: 'marisa_gladius', label: 'グラディウス (236P)', category: 'special' },
@@ -355,6 +379,7 @@ export const characters: Character[] = [
       { id: 'jamie_4hk', label: '天晴脚 (4HK)', category: 'unique' },
       { id: 'jamie_6hk', label: '幻酔舞 (6HK)', category: 'unique' },
       { id: 'jamie_tc1', label: '落星脚 (LK > MK > HK)', category: 'unique' },
+      { id: 'jamie_6mk', label: '旋影脚 (6MK)', category: 'unique' },
       { id: 'jamie_j2mk', label: '無影蹴 (空中2MK)', category: 'unique' },
     ],
     specialMoves: [
@@ -377,6 +402,7 @@ export const characters: Character[] = [
       { id: 'kim_6hk', label: '水遁の術 (6HK)', category: 'unique' },
       { id: 'kim_3mk', label: '風車 (3MK)', category: 'unique' },
       { id: 'kim_tc1', label: '武神虎連牙 (LP > MP > HP > HK)', category: 'unique' },
+      { id: 'kim_j2mp', label: '肘落とし (空中2MP)', category: 'unique' },
       { id: 'kim_tc2', label: '武神獄鎖拳 (LP > MP > 2HP > HK)', category: 'unique' },
     ],
     specialMoves: [
@@ -447,6 +473,7 @@ export const characters: Character[] = [
       { id: 'honda_6hk', label: '払い蹴り (6HK)', category: 'unique' },
       { id: 'honda_tc1', label: '連ね張り手 (LP > MP)', category: 'unique' },
       { id: 'honda_tc2', label: '地鎮祭 (2LP > 2LP)', category: 'unique' },
+      { id: 'honda_3hk_tc', label: '地鎮祭・極 (2LP > 2LP > 3HK)', category: 'unique' },
     ],
     specialMoves: [
       { id: 'honda_harite', label: '百裂張り手 (214P)', category: 'special' },
@@ -467,6 +494,7 @@ export const characters: Character[] = [
     uniqueMoves: [
       { id: 'manon_4hp', label: 'アラベスク (4HP)', category: 'unique' },
       { id: 'manon_3hp', label: 'グラン・フェッテ (3HP)', category: 'unique' },
+      { id: 'manon_4mk', label: 'レヴェランス (4MK)', category: 'unique' },
       { id: 'manon_tc1', label: 'アン・ドゥ・トロワ (MP > MK > HK)', category: 'unique' },
       { id: 'manon_tc2', label: 'ア・テール (2HP > 2HP)', category: 'unique' },
     ],
@@ -489,6 +517,7 @@ export const characters: Character[] = [
       { id: 'lily_6hp', label: 'ホーンブレイカー (6HP)', category: 'unique' },
       { id: 'lily_4hp', label: 'リッジライン (4HP)', category: 'unique' },
       { id: 'lily_3hp', label: 'グレートフット (3HP)', category: 'unique' },
+      { id: 'lily_6mk', label: 'スラストキック (6MK)', category: 'unique' },
       { id: 'lily_tc1', label: 'ダブルホーン (HP > HP)', category: 'unique' },
     ],
     specialMoves: [
@@ -511,6 +540,8 @@ export const characters: Character[] = [
       { id: 'rashid_6mp', label: 'フラップスピン (6MP)', category: 'unique' },
       { id: 'rashid_6hp', label: 'アサルトネイル (6HP)', category: 'unique' },
       { id: 'rashid_j2hp', label: '三角跳び (壁際で9)', category: 'unique' },
+      { id: 'rashid_run', label: 'ラン (66)', category: 'unique' },
+      { id: 'rashid_j2kk', label: 'ブリッツストライク (空中2KK)', category: 'unique' },
     ],
     specialMoves: [
       { id: 'rashid_mixer', label: 'スピニングミキサー (236P)', category: 'special' },
@@ -532,6 +563,8 @@ export const characters: Character[] = [
       { id: 'aki_6hp', label: '紫頭首 (6HP)', category: 'unique' },
       { id: 'aki_3hk', label: '連咬前蹴り (3HK)', category: 'unique' },
       { id: 'aki_4hk', label: '翻鬼襲 (4HK)', category: 'unique' },
+      { id: 'aki_4mp', label: '傀儡手 (4MP)', category: 'unique' },
+      { id: 'aki_6mk', label: '脈切 (6MK)', category: 'unique' },
       { id: 'aki_tc1', label: '蛇連撃 (LP > LP)', category: 'unique' },
     ],
     specialMoves: [
@@ -555,6 +588,7 @@ export const characters: Character[] = [
     uniqueMoves: [
       { id: 'ed_6mp', label: 'スイフトアッパー (6MP)', category: 'unique' },
       { id: 'ed_hp_hold', label: 'サイコナックル (HPホールド)', category: 'unique' },
+      { id: 'ed_6hp', label: 'コブラパンチ (6HP)', category: 'unique' },
       { id: 'ed_tc1', label: 'フリックコンビネーション (MP > HP)', category: 'unique' },
       { id: 'ed_tc2', label: 'ボディブローコンボ (2MP > 2MP)', category: 'unique' },
     ],
@@ -579,6 +613,7 @@ export const characters: Character[] = [
       { id: 'bison_4hp', label: 'チョッピングサージェント (4HP)', category: 'unique' },
       { id: 'bison_3hk', label: 'スライディングキック (3HK)', category: 'unique' },
       { id: 'bison_j2mp', label: 'スカルドロップ (空中2MP)', category: 'unique' },
+      { id: 'bison_jmp_mp', label: 'ヘルアタック (空中MP > MP)', category: 'unique' },
     ],
     specialMoves: [
       { id: 'bison_crusher', label: 'サイコクラッシャーアタック (4溜め6P)', category: 'special' },
@@ -600,13 +635,17 @@ export const characters: Character[] = [
     uniqueMoves: [
       { id: 'terry_3hp', label: 'ライジングアッパー (3HP)', category: 'unique' },
       { id: 'terry_6hp', label: 'ファストパンチ (6HP)', category: 'unique' },
+      { id: 'terry_6lp', label: 'ジャンプブロー (6LP)', category: 'unique' },
+      { id: 'terry_6hk', label: 'バックスピンキック (6HK)', category: 'unique' },
       { id: 'terry_3hk', label: 'ファイヤーキック (3HK)', category: 'unique' },
       { id: 'terry_tc1', label: 'パッシングスウェー (HP > HK)', category: 'unique' },
+      { id: 'terry_tc2', label: 'コンビネーション・ブロー (MP > HP)', category: 'unique' },
     ],
     specialMoves: [
       { id: 'terry_wave', label: 'パワーウェイブ (236P)', category: 'special' },
       { id: 'terry_burn', label: 'バーンナックル (214P)', category: 'special' },
       { id: 'terry_crack', label: 'クラックシュート (214K)', category: 'special' },
+      { id: 'terry_dunk', label: 'パワーダンク (623K)', category: 'special' },
       { id: 'terry_tackle', label: 'ライジングタックル (2溜め8P)', category: 'special' },
       { id: 'terry_charge', label: 'パワーチャージ (236K)', category: 'special' },
     ],
@@ -623,6 +662,8 @@ export const characters: Character[] = [
       { id: 'mai_3hk', label: '紅鶴の舞 (3HK)', category: 'unique' },
       { id: 'mai_6hk', label: '黒燕の舞 (6HK)', category: 'unique' },
       { id: 'mai_j2hp', label: '大輪風車落とし (空中2HP)', category: 'unique' },
+      { id: 'mai_j8mp_hp', label: '夢桜 (空中8MP > HP)', category: 'unique' },
+      { id: 'mai_wall', label: '三角跳び (壁際で9)', category: 'unique' },
       { id: 'mai_tc1', label: '風車崩し (LP > LK > HP)', category: 'unique' },
     ],
     specialMoves: [
@@ -645,6 +686,7 @@ export const characters: Character[] = [
       { id: 'elena_6mp', label: 'ハンドスタンドキック (6MP)', category: 'unique' },
       { id: 'elena_6hp', label: 'ラウンドアーチ (6HP)', category: 'unique' },
       { id: 'elena_3hk', label: 'スライディング (3HK)', category: 'unique' },
+      { id: 'elena_4mk', label: 'リンクステイル (4MK)', category: 'unique' },
       { id: 'elena_tc1', label: 'カポエイラコンビネーション (MP > HK)', category: 'unique' },
     ],
     specialMoves: [

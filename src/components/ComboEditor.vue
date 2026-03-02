@@ -15,7 +15,7 @@
     </div>
 
     <div class="combos-list">
-      <div v-for="(combo, index) in combos" :key="combo.id" class="combo-wrapper"
+      <div v-for="(combo) in combos" :key="combo.id" class="combo-wrapper"
         :class="{ 'is-active': activeComboId === combo.id }" @click="activateCombo(combo.id)">
         <div class="combo-header">
           <input v-model="combo.name" class="combo-name-input" placeholder="コンボ名" @click.stop />
@@ -434,7 +434,7 @@ const copyAllCombos = async (): Promise<void> => {
   let fullText = `【${charName}】`
   
   validCombos.forEach(combo => {
-    const index = combos.value.findIndex(c => c.id === combo.id)
+    //const index = combos.value.findIndex(c => c.id === combo.id)
     const comboText = combo.items.map(m => {
       return m.annotation ? `${m.label}(${m.annotation})` : m.label
     }).join(' > ')

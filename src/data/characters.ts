@@ -49,6 +49,8 @@ export const systemMoves: Move[] = [
   { id: 'parry', label: 'パリィ', category: 'system' },
   { id: 'di', label: 'ドライブインパクト', category: 'system' },
   { id: 'dp', label: 'ドライブリバーサル', category: 'system' },
+  { id: 'throw_f', label: '前投げ', category: 'system' },
+  { id: 'throw_b', label: '後ろ投げ', category: 'system' },
 ]
 
 // --- キャラクター別データ（第1弾: 完全版） ---
@@ -331,6 +333,7 @@ export const characters: Character[] = [
       { id: 'jp_6hp', label: 'マラカ (6HP)', category: 'unique' },
       { id: 'jp_3hk', label: 'ジラント (3HK)', category: 'unique' },
       { id: 'jp_tc1', label: 'バリバリス (MP > MP)', category: 'unique' },
+      { id: 'jp_6hk', label: 'ヴィリーナ (6HK)', category: 'unique' },
     ],
     specialMoves: [
       { id: 'jp_triglav', label: 'トリグラフ (22P)', category: 'special' },

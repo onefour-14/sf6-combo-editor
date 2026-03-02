@@ -24,7 +24,7 @@
 
 
 # リポジトリをクローン
-git clone [https://github.com/あなたのユーザー名/sf6-combo-editor.git](https://github.com/あなたのユーザー名/sf6-combo-editor.git)
+git clone [https://github.com/onefour-14/sf6-combo-editor.git](https://github.com/onefour-14/sf6-combo-editor.git)
 
 # ディレクトリに移動
 cd sf6-combo-editor

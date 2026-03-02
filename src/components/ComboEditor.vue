@@ -240,6 +240,17 @@ const quickTags = ['カウンター', 'パニカン', '画面端', 'ラッシュ
 const showReleaseNotes = ref(false)
 const releaseNotes = [
   {
+    version: '1.4.0',
+    date: '2026-03-03',
+    changes: [
+      'コンボアイテムごとの削除ボタンを追加',
+      '複数コンボの一括コピー機能を追加',
+      'コンボ名の編集機能を追加',
+      'システム技に投げ（前/後ろ）を追加',
+      'フッターにGitHubリンクを追加'
+    ]
+  },
+  {
     version: '1.3.0',
     date: '2026-03-02',
     changes: [
